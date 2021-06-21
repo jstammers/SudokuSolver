@@ -3,35 +3,12 @@ sudoku.py : A sudoku program
 '''
 from itertools import combinations
 import numpy as np
+
+from board import Board
+from solver import BacktrackSolver
+
 dim = 9
 no_cells = dim*dim
-
-
-class Board:
-    def __init__(self, vals=None):
-        self.board_matrix = np.zeros(shape=(dim, dim), dtype=np.uint8)
-        if isinstance(vals, str):
-            self.board_matrix = np.fromfile(vals)
-
-        elif isinstance(vals, type(np.ndarray([]))):
-            self.board_matrix = vals
-        elif vals is not None:
-            for x, y, val in vals:
-                self.board_matrix[x, y] = val
-
-        self.free_count = sum(sum((self.board_matrix == 0)))
-        self.moves = np.zeros(shape=(self.free_count, 2))
-
-    def move(self, k, x, y):
-        self.moves[k] = x, y
-
-    def fill_square(self, x, y, val):
-        self.board_matrix[x, y] = val
-        self.free_count -= 1
-
-    def free_square(self, x, y):
-        self.board_matrix[x, y] = 0
-        self.free_count += 1
 
 
 class Sudoku:
@@ -39,7 +16,7 @@ class Sudoku:
     Represents a sudoku board
     '''
 
-    def __init__(self, vals=None):
+    def __init__(self, vals=None, solver=None):
         self.board = Board(vals)
         self.ncandidates = 0
         self.grid_dict = {
@@ -57,6 +34,8 @@ class Sudoku:
         self.indices = np.indices((9, 9)).T.reshape(81, 2)
         self.finished = False
         self.poss_dict = {}
+        if solver is None:
+            self._solver = BacktrackSolver(self.board)
 
     def __repr__(self):
         return str(self.board.board_matrix)
@@ -233,24 +212,6 @@ class KillerSudoku(Sudoku):
                 counts.append(c)
             counts = np.array(counts)
             return zeros[counts == min(counts)][0]
-
-    # def backtrack(self):
-    #     if self.is_solved():
-    #         self.finished = True
-    #         return self.board.board_matrix
-    #     else:
-    #         p_vals, x, y = self.construct_candidates()
-    #         if p_vals is None:
-    #             return
-    #         self.k += 1
-    #     for p in p_vals:
-    #         val_array = self.val_array.copy()
-    #         self.make_move(x, y, p)
-    #         a = self.backtrack()
-    #         if self.finished:
-    #             return a
-    #         self.unmake_move(x, y)
-    #         self.val_array = val_array.copy()
 
 
 if __name__ == '__main__':

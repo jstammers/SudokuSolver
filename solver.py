@@ -3,7 +3,8 @@ solver.py - a module for interfacing with a Solver class
 """
 from abc import abstractmethod
 
-from sudoku import Board
+from board import Board
+
 
 class BaseSolver:
 
