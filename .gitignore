@@ -4,3 +4,4 @@ UI/*
 .ipynb_checkpoints/*
 __pycache__/*
 *.txt
+.idea
